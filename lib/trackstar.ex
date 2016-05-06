@@ -1,9 +1,12 @@
 defmodule Trackstar do
-  defmodule State do
-    defstruct name: "", trkpt: "", ele: "", time: "", element_acc: ""
-  end
+  require IEx
 
   @chunk 10000
+
+  def parse(path) do
+    coordinates = run(path)
+    GeoJSON.formatted(coordinates)
+  end
 
   def run(path) do
     {:ok, handle} = File.open(path, [:binary])
@@ -22,43 +25,38 @@ defmodule Trackstar do
   def continue_file(tail, {handle, offset, chunk}) do
     case :file.pread(handle, offset, chunk) do
       {:ok, data} ->
-        {<<tail :: binary, data::binary>>, {handle, offset + chunk, chunk}}
+        {<<tail :: binary, data :: binary>>, {handle, offset + chunk, chunk}}
       :eof ->
         {tail, {handle, offset, chunk}}
     end
   end
 
-  def sax_event_handler({:startElement, _, 'name', _, _}, _state) do
-    %State{}
-  end
+  def sax_event_handler(:startDocument, state), do: %Coordinates{}
 
-  def sax_event_handler({:startElement, _, 'ele', _, _}, _state) do
-    %State{}
-  end
-
-  def sax_event_handler({:startElement, _, 'trkpt', _, _}, _state) do
-    %State{}
-  end
-
-  def sax_event_handler({:characters, value}, %State{element_acc: element_acc} = state) do
-    %{state | element_acc: element_acc <> to_string(value)}
-  end
-
-  def sax_event_handler({:endElement, _, 'name', _}, state) do
-    %{state | name: state.element_acc}
-  end
-
-  def sax_event_handler({:endElement, _, 'ele', _}, state) do
-    state = %{state | ele: state.element_acc}
-    IO.puts "Elevation (m): #{state.ele}"
-    state
-  end
-
-  def sax_event_handler({:endElement, _, 'trkpt', _}, state) do
-    %{state | trkpt: state.element_acc}
-    state
+  def sax_event_handler({:startElement, _, 'trkpt', _, attributes}, state) do
+    lnglat = lnglat(attributes)
+    %{state | coordinates: state.coordinates ++ [ lnglat ]}
   end
 
   def sax_event_handler(:endDocument, state), do: state
   def sax_event_handler(_, state), do: state
+
+  defp lnglat(attributes) do
+    [pull_lng(attributes), pull_lat(attributes)]
+    |> parse_lnglat
+  end
+
+  def pull_lat({_, 'lat', _, _, lat}), do: lat
+  def pull_lat({_, 'lon', _, _, _lon}), do: nil
+  def pull_lat(attributes) when is_list(attributes) do
+    attributes |> Enum.map(&(pull_lat(&1)))
+  end
+
+  def pull_lng({_, 'lon', _, _, lon}), do: lon
+  def pull_lng({_, 'lat', _, _, _lat}), do: nil
+  def pull_lng(attributes) when is_list(attributes) do
+    attributes |> Enum.map(&(pull_lng(&1)))
+  end
+
+  def parse_lnglat([[lng, nil], [nil, lat]]), do: [lng, lat]
 end
