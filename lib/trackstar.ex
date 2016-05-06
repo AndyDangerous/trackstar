@@ -5,9 +5,16 @@ defmodule Trackstar do
 
   def parse(path) do
     case run(path) do
-      {:ok, coords, _} -> GeoJSON.formatted(coords)
-      {_, error} -> raise(error)
+      {:ok, coords, '\n'} -> GeoJSON.formatted_linestring(coords)
+      {_, error, '\n'} -> raise(error)
     end
+  end
+
+  def fix_dumb_charlist(coords_struct) do
+    coords_struct.coordinates
+    |> Enum.map
+    |> Enum.map
+    |> List.to_string
   end
 
   def run(path) do
@@ -34,7 +41,7 @@ defmodule Trackstar do
     end
   end
 
-  def sax_event_handler(:startDocument, state), do: %Coordinates{}
+  def sax_event_handler(:startDocument, _state), do: %Coordinates{}
 
   def sax_event_handler({:startElement, _, 'trkpt', _, attributes}, state) do
     lnglat = lnglat(attributes)
