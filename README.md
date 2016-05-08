@@ -1,6 +1,10 @@
-# Trackstar
+# Trackstar [![Build Status](https://travis-ci.org/AndyDangerous/trackstar.svg?branch=master)](https://travis-ci.org/AndyDangerous/trackstar)
 
-**TODO: Add description**
+Trackstar is a GPX parser. Specify the path to a GPX file and it will output a GeoJSON of the track as a LineString. It currently works with Strava-exported GPX files. 
+
+#### How to use it:
+
+`Trackstar.parse("path/to/my_track.gpx")` will convert your GPX file to GeoJSON. You can find your new file in `export/my_track.json`
 
 ## Installation
 

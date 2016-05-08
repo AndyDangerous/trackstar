@@ -5,7 +5,7 @@ defmodule Trackstar do
 
   def parse(path) do
     case run(path) do
-      {:ok, coords, '\n'} -> GeoJSON.formatted_linestring(coords)
+      {:ok, coords, '\n'} -> GeoJSON.to_file(coords)
       {_, error, '\n'} -> raise(error)
     end
   end
