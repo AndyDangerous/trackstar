@@ -1,6 +1,4 @@
 defmodule GeoJSON do
-  require IEx
-
   @derive [Poison.Encoder]
 
   def to_file(coords_struct, filename \\ "export_geojson") do

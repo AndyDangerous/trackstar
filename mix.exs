@@ -7,6 +7,8 @@ defmodule Trackstar.Mixfile do
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
+     description: description,
+     package: package,
      deps: deps]
   end
 
@@ -29,5 +31,18 @@ defmodule Trackstar.Mixfile do
   defp deps do
     [{:erlsom, "~> 1.4"},
     {:poison, "~> 2.0"}]
+  end
+
+  defp description do
+    """
+    Trackstar is a GPX parser. Specify the path to a GPX file and it will output a GeoJSON of the track as a LineString. It currently works with Strava-exported GPX files.
+    """
+  end
+
+  defp package do
+    [# These are the default files included in the package
+     maintainers: ["Andy Mention"],
+     licenses: ["MIT"],
+     links: %{"GitHub" => "https://github.com/andydangerous/trackstar"} ]
   end
 end
