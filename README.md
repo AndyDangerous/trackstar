@@ -4,7 +4,7 @@ Trackstar is a GPX parser. Specify the path to a GPX file and it will output a G
 
 #### How to use it:
 
-`Trackstar.parse("path/to/my_track.gpx")` will convert your GPX file to GeoJSON. You can find your new file in `export/my_track.json`
+`Trackstar.to_linestring("path/to/my_track.gpx")` will convert your GPX file to GeoJSON linestring. You can find your new file in `export/my_track.json`
 
 ## Installation
 
